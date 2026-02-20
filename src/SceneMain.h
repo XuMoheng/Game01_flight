@@ -1,6 +1,10 @@
 // SceneMain.h
 #pragma once
+
+#include "Object.h"
 #include "Scene.h"
+
+class Game;
 
 class SceneMain : public Scene {
   public:
@@ -14,4 +18,6 @@ class SceneMain : public Scene {
     void clean() override;
 
   private:
+    Game &game;
+    Player player;
 };

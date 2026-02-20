@@ -8,7 +8,7 @@ SceneMain::SceneMain() : game(Game::getInstance()) {}
 
 SceneMain::~SceneMain() {}
 
-void SceneMain::update() {}
+void SceneMain::update() { keyboardControl(); }
 
 void SceneMain::render() {
     SDL_Rect playerRect = {static_cast<int>(player.position.x),
@@ -36,5 +36,35 @@ void SceneMain::init() {
 void SceneMain::clean() {
     if (player.texture != nullptr) {
         SDL_DestroyTexture(player.texture);
+    }
+}
+
+void SceneMain::keyboardControl() {
+    auto keyboardState = SDL_GetKeyboardState(NULL);
+    if (keyboardState[SDL_SCANCODE_W]) {
+        player.position.y -= 1;
+    }
+    if (keyboardState[SDL_SCANCODE_S]) {
+        player.position.y += 1;
+    }
+    if (keyboardState[SDL_SCANCODE_A]) {
+        player.position.x -= 1;
+    }
+    if (keyboardState[SDL_SCANCODE_D]) {
+        player.position.x += 1;
+    }
+
+    // 限制飞机的移动范围
+    if (player.position.x < 0) {
+        player.position.x = 0;
+    }
+    if (player.position.x > game.getWindowWidth() - player.width) {
+        player.position.x = game.getWindowWidth() - player.width;
+    }
+    if (player.position.y < 0) {
+        player.position.y = 0;
+    }
+    if (player.position.y > game.getWindowHeight() - player.height) {
+        player.position.y = game.getWindowHeight() - player.height;
     }
 }

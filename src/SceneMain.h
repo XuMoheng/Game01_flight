@@ -3,6 +3,7 @@
 
 #include "Object.h"
 #include "Scene.h"
+#include <list>
 
 class Game;
 
@@ -19,7 +20,13 @@ class SceneMain : public Scene {
 
     void keyboardControl(float deltaTime);
 
+    void shootPlayer();
+    void updatePlayerProjectile(float deltaTime);
+    void renderPlayerProjectiles();
+
   private:
     Game &game;
     Player player;
+    ProjectilePlayer projectilePlayerTemplate;
+    std::list<ProjectilePlayer *> projectilesPlayer;
 };

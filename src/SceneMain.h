@@ -11,13 +11,13 @@ class SceneMain : public Scene {
     SceneMain();
     ~SceneMain();
 
-    void update() override;
-    void render() override;
-    void handleEvent(SDL_Event *event) override;
     void init() override;
+    void handleEvent(SDL_Event *event) override;
+    void update(float deltaTime) override;
+    void render() override;
     void clean() override;
 
-    void keyboardControl();
+    void keyboardControl(float deltaTime);
 
   private:
     Game &game;

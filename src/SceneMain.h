@@ -3,7 +3,9 @@
 
 #include "Object.h"
 #include "Scene.h"
+#include <SDL_mixer.h>
 #include <list>
+#include <map>
 #include <random>
 
 class Game;
@@ -71,6 +73,9 @@ class SceneMain : public Scene {
 
     Item itemLifeTemplate;
     std::list<Item *> items;
+
+    Mix_Music *bgm;
+    std::map<std::string, Mix_Chunk *> sounds; // 存储音效
 
     bool isDead = false;
 };

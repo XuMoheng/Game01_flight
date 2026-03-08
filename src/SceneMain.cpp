@@ -71,6 +71,22 @@ void SceneMain::init() {
                      &itemLifeTemplate.width, &itemLifeTemplate.height);
     itemLifeTemplate.width /= 4;
     itemLifeTemplate.height /= 4;
+
+    // 初始化音效
+    bgm = Mix_LoadMUS("assets/music/03_Racing_Through_Asteroids_Loop.ogg");
+    if (bgm == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load music: %s",
+                     Mix_GetError());
+    }
+    Mix_PlayMusic(bgm, -1);
+
+    // 加载音效
+    sounds["player_shoot"] = Mix_LoadWAV("../assets/sound/laser_shoot4.wav");
+    sounds["enemy_shoot"] = Mix_LoadWAV("../assets/sound/xs_laser.wav");
+    sounds["player_explode"] = Mix_LoadWAV("../assets/sound/explosion1.wav");
+    sounds["enemy_explode"] = Mix_LoadWAV("../assets/sound/explosion3.wav");
+    sounds["hit"] = Mix_LoadWAV("../assets/sound/eff11.wav");
+    sounds["get_item"] = Mix_LoadWAV("../assets/sound/eff5.wav");
 }
 
 void SceneMain::handleEvent([[maybe_unused]] SDL_Event *event) {}
@@ -147,6 +163,14 @@ void SceneMain::clean() {
     }
     items.clear();
 
+    // 清理音频
+    for (auto sound : sounds) {
+        if (sound.second != nullptr) {
+            Mix_FreeChunk(sound.second);
+        }
+    }
+    sounds.clear();
+
     // 清理纹理
     if (player.texture != nullptr) {
         SDL_DestroyTexture(player.texture);
@@ -165,6 +189,10 @@ void SceneMain::clean() {
     }
     if (itemLifeTemplate.texture != nullptr) {
         SDL_DestroyTexture(itemLifeTemplate.texture);
+    }
+    if (bgm != nullptr) {
+        Mix_HaltMusic();
+        Mix_FreeMusic(bgm);
     }
 }
 
@@ -214,6 +242,7 @@ void SceneMain::shootPlayer() {
         player.position.x + player.width / 2 - projectile->width / 2;
     projectile->position.y = player.position.y;
     projectilesPlayer.push_back(projectile);
+    Mix_PlayChannel(0, sounds["player_shoot"], 0);
 }
 
 void SceneMain::updatePlayerProjectiles(float deltaTime) {
@@ -239,6 +268,7 @@ void SceneMain::updatePlayerProjectiles(float deltaTime) {
                     delete projectile;
                     it = projectilesPlayer.erase(it);
                     hit = true;
+                    Mix_PlayChannel(-1, sounds["hit"], 0);
                     break;
                 }
             }
@@ -310,6 +340,7 @@ void SceneMain::shootEnemy(Enemy *enemy) {
         enemy->position.y + enemy->height / 2 - projectile->height / 2;
     projectile->direction = getDirection(enemy);
     projectilesEnemy.push_back(projectile);
+    Mix_PlayChannel(-1, sounds["enemy_shoot"], 0);
 }
 
 void SceneMain::enemyExplode(Enemy *enemy) {
@@ -326,6 +357,8 @@ void SceneMain::enemyExplode(Enemy *enemy) {
     if (dis(gen) < 0.5f) {
         dropItem(enemy);
     }
+
+    Mix_PlayChannel(-1, sounds["enemy_explode"], 0);
 
     delete enemy;
 }
@@ -369,6 +402,7 @@ void SceneMain::updateEnemyProjectiles(float deltaTime) {
                 player.currentHealth -= projectile->damage;
                 delete projectile;
                 it = projectilesEnemy.erase(it);
+                Mix_PlayChannel(-1, sounds["hit"], 0);
             } else {
                 ++it;
             }
@@ -398,8 +432,9 @@ void SceneMain::updatePlayer([[maybe_unused]] float deltaTime) {
         return;
     }
     if (player.currentHealth <= 0) {
-        // 玩家死亡处理
         isDead = true;
+        Mix_PlayChannel(-1, sounds["player_explode"], 0);
+        return;
     }
     for (auto enemy : enemies) {
         SDL_Rect enemyRect = {static_cast<int>(enemy->position.x),
@@ -462,6 +497,7 @@ void SceneMain::playerGetItem(Item *item) {
             player.currentHealth = player.maxHealth;
         }
     }
+    Mix_PlayChannel(-1, sounds["get_item"], 0);
 }
 
 void SceneMain::updateItems(float deltaTime) {

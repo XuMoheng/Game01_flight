@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Scene.h"
+#include <SDL_mixer.h>
 
 class Game {
   public:
@@ -20,7 +21,6 @@ class Game {
     void clean();
 
     void changeScene(Scene *scene);
-
 
     SDL_Window *getWindow() { return window; }
     SDL_Renderer *getRenderer() { return renderer; }

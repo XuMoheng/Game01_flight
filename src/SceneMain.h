@@ -38,8 +38,12 @@ class SceneMain : public Scene {
     void updateEnemyProjectiles(float deltaTime);
     void renderEnemyProjectiles();
 
-	// 玩家
+    // 玩家
     void updatePlayer(float deltaTime);
+
+    // 爆炸动画
+    void updateExplosions(float deltaTime);
+    void renderExplosions();
 
   private:
     Game &game;
@@ -56,5 +60,8 @@ class SceneMain : public Scene {
     ProjectileEnemy projectileEnemyTemplate;
     std::list<ProjectileEnemy *> projectilesEnemy;
 
-	bool isDead = false;
+    Explosion explosionTemplate;
+    std::list<Explosion *> explosions;
+
+    bool isDead = false;
 };

@@ -91,6 +91,13 @@ void SceneMain::init() {
     // 初始化ui
     uiHealth = IMG_LoadTexture(game.getRenderer(),
                                "../assets/image/Health UI Black.png");
+
+    // 加载字体
+    if (TTF_Init() == -1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Failed to initialize TTF: %s", TTF_GetError());
+    }
+    scoreFont = TTF_OpenFont("../assets/font/VonwaonBitmap-12px.ttf", 24);
 }
 
 void SceneMain::handleEvent([[maybe_unused]] SDL_Event *event) {}
@@ -180,6 +187,10 @@ void SceneMain::clean() {
     // 清理ui
     if (uiHealth != nullptr) {
         SDL_DestroyTexture(uiHealth);
+    }
+    // 清理字体
+    if (scoreFont != nullptr) {
+        TTF_CloseFont(scoreFont);
     }
 
     // 清理纹理
@@ -363,14 +374,12 @@ void SceneMain::enemyExplode(Enemy *enemy) {
         enemy->position.y + enemy->height / 2 - explosion->height / 2;
     explosion->startTime = currentTime;
     explosions.push_back(explosion);
-
     // 50%概率掉落物品
     if (dis(gen) < 0.5f) {
         dropItem(enemy);
     }
-
     Mix_PlayChannel(-1, sounds["enemy_explode"], 0);
-
+    score += 10;
     delete enemy;
 }
 
@@ -502,6 +511,7 @@ void SceneMain::dropItem(Enemy *enemy) {
 }
 
 void SceneMain::playerGetItem(Item *item) {
+    score += 5;
     if (item->type == ItemType::Life) {
         player.currentHealth += 1;
         if (player.currentHealth > player.maxHealth) {
@@ -575,6 +585,7 @@ void SceneMain::renderItems() {
 }
 
 void SceneMain::renderUI() {
+    // 渲染生命值
     int x = 10;
     int y = 10;
     int size = 32;
@@ -589,4 +600,16 @@ void SceneMain::renderUI() {
         SDL_Rect rect = {x + i * offset, y, size, size};
         SDL_RenderCopy(game.getRenderer(), uiHealth, NULL, &rect);
     }
+
+    // 渲染得分
+    auto text = "SCORE:" + std::to_string(score);
+    SDL_Color color = {255, 255, 255, 255}; // 白色
+    SDL_Surface *surface = TTF_RenderUTF8_Solid(scoreFont, text.c_str(), color);
+    SDL_Texture *texture =
+        SDL_CreateTextureFromSurface(game.getRenderer(), surface);
+    SDL_Rect rect = {game.getWindowWidth() - 10 - surface->w, 10, surface->w,
+                     surface->h};
+    SDL_RenderCopy(game.getRenderer(), texture, NULL, &rect);
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 }

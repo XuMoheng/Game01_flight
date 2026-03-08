@@ -4,6 +4,7 @@
 #include "Object.h"
 #include "Scene.h"
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <list>
 #include <map>
 #include <random>
@@ -53,8 +54,8 @@ class SceneMain : public Scene {
     void updateItems(float deltaTime);
     void renderItems();
 
-	// ui
-	void renderUI();
+    // ui
+    void renderUI();
 
   private:
     Game &game;
@@ -80,7 +81,9 @@ class SceneMain : public Scene {
     Mix_Music *bgm;
     std::map<std::string, Mix_Chunk *> sounds;
 
-	SDL_Texture* uiHealth;
+    SDL_Texture *uiHealth;
+    TTF_Font *scoreFont;
+    int score = 0;
 
     bool isDead = false;
 };

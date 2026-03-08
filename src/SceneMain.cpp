@@ -1,6 +1,7 @@
 // SceneMain.cpp
 #include "SceneMain.h"
 #include "Game.h"
+#include "SceneEnd.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_scancode.h>
@@ -111,6 +112,9 @@ void SceneMain::update(float deltaTime) {
     updatePlayer(deltaTime);
     updateExplosions(deltaTime);
     updateItems(deltaTime);
+    if (isDead) {
+        changeSceneDelayed(deltaTime, 3);
+    }
 }
 
 void SceneMain::render() {
@@ -312,7 +316,7 @@ void SceneMain::renderPlayerProjectiles() {
 }
 
 void SceneMain::spawEnemy() {
-    if (dis(gen) > 1 / 60.0f) {
+    if (dis(gen) > 1 / 200.0f) {
         return;
     }
     Enemy *enemy = new Enemy(enemyTemplate);
@@ -452,7 +456,15 @@ void SceneMain::updatePlayer([[maybe_unused]] float deltaTime) {
         return;
     }
     if (player.currentHealth <= 0) {
+        auto currentTime = SDL_GetTicks();
         isDead = true;
+        auto explosion = new Explosion(explosionTemplate);
+        explosion->position.x =
+            player.position.x + player.width / 2 - explosion->width / 2;
+        explosion->position.y =
+            player.position.y + player.height / 2 - explosion->height / 2;
+        explosion->startTime = currentTime;
+        explosions.push_back(explosion);
         Mix_PlayChannel(-1, sounds["player_explode"], 0);
         return;
     }
@@ -612,4 +624,12 @@ void SceneMain::renderUI() {
     SDL_RenderCopy(game.getRenderer(), texture, NULL, &rect);
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
+}
+
+void SceneMain::changeSceneDelayed(float deltaTime, float delay) {
+    timerEnd += deltaTime;
+    if (timerEnd > delay) {
+        auto sceneEnd = new SceneEnd();
+        game.changeScene(sceneEnd);
+    }
 }

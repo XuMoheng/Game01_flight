@@ -30,6 +30,7 @@ target_sources(${TARGET}
         src/Scene.cpp
         src/SceneMain.cpp
         src/SceneTitle.cpp
+        src/SceneEnd.cpp
 )
 
 target_link_libraries(${TARGET}

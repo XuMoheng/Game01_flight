@@ -57,6 +57,9 @@ class SceneMain : public Scene {
     // ui
     void renderUI();
 
+    // scene
+    void changeSceneDelayed(float deltaTime, float delay);
+
   private:
     Game &game;
     Player player;
@@ -84,6 +87,8 @@ class SceneMain : public Scene {
     SDL_Texture *uiHealth;
     TTF_Font *scoreFont;
     int score = 0;
+
+    float timerEnd = 0.0f;
 
     bool isDead = false;
 };

@@ -4,6 +4,7 @@
 #include "Object.h"
 #include "Scene.h"
 #include <list>
+#include <random>
 
 class Game;
 
@@ -20,13 +21,40 @@ class SceneMain : public Scene {
 
     void keyboardControl(float deltaTime);
 
+    // 射击
     void shootPlayer();
-    void updatePlayerProjectile(float deltaTime);
+    void updatePlayerProjectiles(float deltaTime);
     void renderPlayerProjectiles();
+
+    // 敌机
+    void spawEnemy();
+    void updateEnemies(float deltaTime);
+    void renderEnemies();
+    void enemyExplode(Enemy *enemy);
+
+    // 敌机子弹
+    void shootEnemy(Enemy *enemy);
+    SDL_FPoint getDirection(Enemy *enemy);
+    void updateEnemyProjectiles(float deltaTime);
+    void renderEnemyProjectiles();
+
+	// 玩家
+    void updatePlayer(float deltaTime);
 
   private:
     Game &game;
     Player player;
     ProjectilePlayer projectilePlayerTemplate;
     std::list<ProjectilePlayer *> projectilesPlayer;
+
+    std::mt19937 gen;
+    std::uniform_real_distribution<float> dis;
+
+    Enemy enemyTemplate;
+    std::list<Enemy *> enemies;
+
+    ProjectileEnemy projectileEnemyTemplate;
+    std::list<ProjectileEnemy *> projectilesEnemy;
+
+	bool isDead = false;
 };

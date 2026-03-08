@@ -73,7 +73,7 @@ void SceneMain::init() {
     itemLifeTemplate.height /= 4;
 
     // 初始化音效
-    bgm = Mix_LoadMUS("assets/music/03_Racing_Through_Asteroids_Loop.ogg");
+    bgm = Mix_LoadMUS("../assets/music/03_Racing_Through_Asteroids_Loop.ogg");
     if (bgm == nullptr) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to load music: %s",
                      Mix_GetError());

@@ -75,7 +75,7 @@ class SceneMain : public Scene {
     std::list<Item *> items;
 
     Mix_Music *bgm;
-    std::map<std::string, Mix_Chunk *> sounds; // 存储音效
+    std::map<std::string, Mix_Chunk *> sounds;
 
     bool isDead = false;
 };

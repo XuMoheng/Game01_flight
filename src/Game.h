@@ -1,6 +1,7 @@
 // Game.h
 #pragma once
 
+#include "Object.h"
 #include "Scene.h"
 #include <SDL_mixer.h>
 
@@ -27,6 +28,10 @@ class Game {
     int getWindowWidth() { return windowWidth; }
     int getWindowHeight() { return windowHeight; }
 
+    // 背景
+    void backgroundUpdate(float deltaTime);
+    void renderBackground();
+
   private:
     Game();
     // 删除拷贝与赋值构造函数
@@ -39,6 +44,9 @@ class Game {
     SDL_Renderer *renderer = nullptr;
     int windowWidth = 600;
     int windowHeight = 800;
+
+    Background nearStars;
+    Background farStars;
 
     int FPS = 120;
     Uint32 frameTime;

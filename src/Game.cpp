@@ -1,6 +1,7 @@
 // Game.cpp
 #include "Game.h"
 #include "SceneMain.h"
+#include "SceneTitle.h"
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
@@ -97,7 +98,20 @@ void Game::init() {
     farStars.width /= 2;
     farStars.speed = 20; // 远处的星星移动速度较慢
 
-    currentScene = new SceneMain();
+    // 初始化字体
+    if (TTF_Init() != 0) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "TTF_Init: %s\n", TTF_GetError());
+        isRunning = false;
+    }
+    titleFont = TTF_OpenFont("../assets/font/VonwaonBitmap-16px.ttf", 64);
+    textFont = TTF_OpenFont("../assets/font/VonwaonBitmap-16px.ttf", 32);
+    if (titleFont == nullptr || textFont == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "TTF_OpenFont: %s\n",
+                     TTF_GetError());
+        isRunning = false;
+    }
+
+    currentScene = new SceneTitle();
     currentScene->init();
 }
 
@@ -184,4 +198,21 @@ void Game::renderBackground() {
             SDL_RenderCopy(renderer, nearStars.texture, nullptr, &dstRect);
         }
     }
+}
+
+void Game::renderTextCentered(std::string text, float posY, bool isTitle) {
+    SDL_Color color = {255, 255, 255, 255};
+    SDL_Surface *surface;
+    if (isTitle) {
+        surface = TTF_RenderUTF8_Solid(titleFont, text.c_str(), color);
+    } else {
+        surface = TTF_RenderUTF8_Solid(textFont, text.c_str(), color);
+    }
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    int y = static_cast<int>((getWindowHeight() - surface->h) * posY);
+    SDL_Rect rect = {getWindowWidth() / 2 - surface->w / 2, y, surface->w,
+                     surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
 }

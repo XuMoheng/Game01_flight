@@ -27,7 +27,9 @@ target_sources(${TARGET}
     PRIVATE
         src/main.cpp
         src/Game.cpp
+        src/Scene.cpp
         src/SceneMain.cpp
+        src/SceneTitle.cpp
 )
 
 target_link_libraries(${TARGET}

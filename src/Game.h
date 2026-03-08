@@ -4,6 +4,8 @@
 #include "Object.h"
 #include "Scene.h"
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
+#include <string>
 
 class Game {
   public:
@@ -32,6 +34,8 @@ class Game {
     void backgroundUpdate(float deltaTime);
     void renderBackground();
 
+    void renderTextCentered(std::string text, float posY, bool isTitle);
+
   private:
     Game();
     // 删除拷贝与赋值构造函数
@@ -51,4 +55,7 @@ class Game {
     int FPS = 120;
     Uint32 frameTime;
     float deltaTime;
+
+    TTF_Font *titleFont;
+    TTF_Font *textFont;
 };

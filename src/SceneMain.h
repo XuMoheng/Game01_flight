@@ -53,6 +53,9 @@ class SceneMain : public Scene {
     void updateItems(float deltaTime);
     void renderItems();
 
+	// ui
+	void renderUI();
+
   private:
     Game &game;
     Player player;
@@ -76,6 +79,8 @@ class SceneMain : public Scene {
 
     Mix_Music *bgm;
     std::map<std::string, Mix_Chunk *> sounds;
+
+	SDL_Texture* uiHealth;
 
     bool isDead = false;
 };

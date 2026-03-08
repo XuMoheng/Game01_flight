@@ -45,6 +45,12 @@ class SceneMain : public Scene {
     void updateExplosions(float deltaTime);
     void renderExplosions();
 
+    // 道具
+    void dropItem(Enemy *enemy);
+    void playerGetItem(Item *item);
+    void updateItems(float deltaTime);
+    void renderItems();
+
   private:
     Game &game;
     Player player;
@@ -62,6 +68,9 @@ class SceneMain : public Scene {
 
     Explosion explosionTemplate;
     std::list<Explosion *> explosions;
+
+    Item itemLifeTemplate;
+    std::list<Item *> items;
 
     bool isDead = false;
 };

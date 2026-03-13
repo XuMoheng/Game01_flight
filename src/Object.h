@@ -8,7 +8,7 @@ struct Player {
     int width = 0;
     int height = 0;
     int speed = 200;
-    int currentHealth = 10;
+    int currentHealth = 2;
     int maxHealth = 10;
     Uint32 coolDown = 100;
     Uint32 lastShootTime = 0;

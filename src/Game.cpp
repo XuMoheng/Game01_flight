@@ -5,10 +5,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_timer.h>
+#include <fstream>
 
 Game::Game() {}
 
-Game::~Game() { clean(); }
+Game::~Game() {
+    saveData();
+    clean();
+}
 
 void Game::run() {
     while (isRunning) {
@@ -113,6 +117,8 @@ void Game::init() {
 
     currentScene = new SceneTitle();
     currentScene->init();
+
+    loadData();
 }
 
 void Game::handleEvent(SDL_Event *event) {
@@ -200,7 +206,7 @@ void Game::renderBackground() {
     }
 }
 
-void Game::renderTextCentered(std::string text, float posY, bool isTitle) {
+SDL_Point Game::renderTextCentered(std::string text, float posY, bool isTitle) {
     SDL_Color color = {255, 255, 255, 255};
     SDL_Surface *surface;
     if (isTitle) {
@@ -215,4 +221,63 @@ void Game::renderTextCentered(std::string text, float posY, bool isTitle) {
     SDL_RenderCopy(renderer, texture, NULL, &rect);
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
+    return {rect.x + rect.w, y}; // 返回文本末尾的坐标
+}
+
+void Game::renderTextPos(std::string text, int posX, int posY) {
+    SDL_Color color = {255, 255, 255, 255};
+    SDL_Surface *surface = TTF_RenderUTF8_Solid(textFont, text.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect rect = {posX, posY, surface->w, surface->h};
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+void Game::renderTextPos(std::string text, int posX, int posY, bool isLeft) {
+    SDL_Color color = {255, 255, 255, 255};
+    SDL_Surface *surface = TTF_RenderUTF8_Solid(textFont, text.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect rect;
+    if (isLeft) {
+        rect = {posX, posY, surface->w, surface->h};
+    } else {
+        rect = {getWindowWidth() - posX - surface->w, posY, surface->w,
+                surface->h};
+    }
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
+
+void Game::insertLeaderBoard(int score, std::string name) {
+    leaderBoard.insert({score, name});
+    if (leaderBoard.size() > 8) {
+        leaderBoard.erase(--leaderBoard.end());
+    }
+}
+
+void Game::saveData() {
+    std::ofstream file("../assets/save.dat");
+    if (!file.is_open()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to open save file");
+        return;
+    }
+    for (const auto &entry : leaderBoard) {
+        file << entry.first << " " << entry.second << std::endl;
+    }
+}
+
+void Game::loadData() {
+    std::ifstream file("../assets/save.dat");
+    if (!file.is_open()) {
+        SDL_Log("Failed to open save file");
+        return;
+    }
+    leaderBoard.clear();
+    int score;
+    std::string name;
+    while (file >> score >> name) {
+        leaderBoard.insert({score, name});
+    }
 }

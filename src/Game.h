@@ -64,6 +64,7 @@ class Game {
     SDL_Renderer *renderer = nullptr;
     int windowWidth = 600;
     int windowHeight = 800;
+    bool isFullscreen = false;
 
     Background nearStars;
     Background farStars;

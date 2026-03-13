@@ -5,12 +5,19 @@
 #include <string>
 
 void SceneEnd::init() {
+    bgm = Mix_LoadMUS("assets/music/06_Battle_in_Space_Intro.ogg");
+    if (!bgm) {
+        SDL_LogError(SDL_LOG_PRIORITY_ERROR, "Failed to load music: %s",
+                     Mix_GetError());
+    }
+    Mix_PlayMusic(bgm, -1);
+
     if (!SDL_IsTextInputActive()) {
         SDL_StartTextInput();
     }
     if (!SDL_IsTextInputActive()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "Failed to start text input: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_PRIORITY_ERROR, "Failed to start text input: %s",
+                     SDL_GetError());
     }
 }
 
@@ -62,6 +69,10 @@ void SceneEnd::clean() {
     if (SDL_IsTextInputActive()) {
         SDL_StopTextInput();
     }
+    if (bgm != nullptr) {
+        Mix_HaltMusic();
+        Mix_FreeMusic(bgm);
+    }
 }
 
 void SceneEnd::renderPhase1() {
@@ -85,12 +96,11 @@ void SceneEnd::renderPhase1() {
     }
 }
 
-void SceneEnd::renderPhase2()
-{
+void SceneEnd::renderPhase2() {
     game.renderTextCentered("得分榜", 0.05, true);
     auto posY = 0.2 * game.getWindowHeight();
     auto i = 1;
-    for (auto item : game.getLeaderBoard()){
+    for (auto item : game.getLeaderBoard()) {
         std::string name = std::to_string(i) + ". " + item.second;
         std::string score = std::to_string(item.first);
         game.renderTextPos(name, 100, posY);
@@ -98,7 +108,7 @@ void SceneEnd::renderPhase2()
         posY += 45;
         i++;
     }
-    if (blinkTimer < 0.5){
+    if (blinkTimer < 0.5) {
         game.renderTextCentered("按 J 键重新开始游戏", 0.85, false);
     }
 }

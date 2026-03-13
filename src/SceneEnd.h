@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Scene.h"
+#include <SDL_mixer.h>
 #include <string>
 
 class SceneEnd : public Scene {
@@ -22,4 +23,6 @@ class SceneEnd : public Scene {
     bool isTyping = true;
     std::string name = "";
     float blinkTimer = 1.0f;
+
+    Mix_Music *bgm;
 };
